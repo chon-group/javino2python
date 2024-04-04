@@ -13,26 +13,23 @@ For this reason, every message is composed of a preamble, a field size and the m
 ## How to install?
 We consider that you are using the last version of [chonOS](https://chonos.sf.net/) <sup>[\[how to install the chonOS\]](https://docs.google.com/document/d/1vNFF5BW73UKxvOMUaiKSjbKSz3Kq5z7TSr4vD3TmAbM/edit?usp=sharing)</sup>.
 
-### 1 - Updating the chonOS and installing deps
+### 1 - Updating and installing deps
 Connect via SSH in your ChonOS system and execute the commands below:
 
 ```bash
-chonosUpdate 
-apt install raspberrypi-kernel-headers chonos-serial-port-emulator 
-reboot
+echo "deb [trusted=yes] http://packages.chon.group/ chonos main" | sudo tee /etc/apt/sources.list.d/chonos.list
+sudo apt update
+sudo apt install raspberrypi-kernel-headers chonos-serial-port-emulator jason-cli javino python3-pip -y
+sudo reboot
 ```
-If all is correct, your prompt will appears like below:
-![Javino Message Format](./doc/img/chonosUpdate.png)
 
-### 2 - Installing the Javino Library for Pythion
+### 2 - Installing the Javino Library for Python
 After reboot, connect in your chonOS (via SSH) again and execute the command below
 
 ```bash
 pip3 install https://github.com/chon-group/javino2python/releases/latest/download/javino-latest-py3-none-any.whl
 ```
-If all is correct, your prompt will appears like below:
 
-![Javino Message Format](./doc/img/javino-pip-install.png)
 
 ## How to use?
 ### 1 Download and execute the Blink GPIO Example 
