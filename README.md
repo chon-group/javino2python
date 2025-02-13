@@ -27,7 +27,7 @@ sudo reboot
 After reboot, connect in your chonOS (via SSH) again and execute the command below
 
 ```bash
-pip3 install https://github.com/chon-group/javino2python/releases/latest/download/javino-latest-py3-none-any.whl
+pip3 install https://github.com/chon-group/javino2python/releases/latest/download/javino-0.1.5-py3-none-any.whl
 ```
 
 
