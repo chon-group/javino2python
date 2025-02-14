@@ -23,11 +23,23 @@ sudo apt install raspberrypi-kernel-headers chonos-serial-port-emulator jason-cl
 sudo reboot
 ```
 
-### 2 - Installing the Javino Library for Python
+### 2.1 - Installing the Javino Library for Python in a RaspberryPi
 After reboot, connect in your chonOS (via SSH) again and execute the command below
 
 ```bash
-pip3 install https://github.com/chon-group/javino2python/releases/latest/download/javino-0.1.5-py3-none-any.whl
+    wget --content-disposition https://packages.chon.group/python/javino/
+    pip3 install javino*.whl
+```
+
+### 2.2 - Installing the Javino Library for Python in project
+After reboot, connect in your chonOS (via SSH) again and execute the command below
+
+```bash
+	python3 -m venv pythonENV
+    source pythonENV/bin/activate
+    pip install --upgrade pip
+    wget --content-disposition https://packages.chon.group/python/javino/
+    pip install javino*.whl
 ```
 
 
