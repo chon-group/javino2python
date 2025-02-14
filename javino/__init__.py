@@ -6,3 +6,4 @@ from .javino import availableMsg
 from .javino import getMsg
 from .javino import addPercept
 from .javino import sendPercepts
+from .javino import clearChannel

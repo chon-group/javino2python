@@ -63,11 +63,13 @@ def getMsg(ser):
         # Read available bytes from the serial port
         bytes_available = ser.in_waiting
         if bytes_available > 0:
-            line = ser.read(bytes_available).decode().strip()
-            if line.startswith("fffe"):
-                size_hex = line[4:6]
+            header = ser.read(4).decode().strip()
+            if header != "fffe":
+                clearChannel(ser)
+            else:
+                size_hex = ser.read(2).decode().strip()
                 size_decimal = int(size_hex, 16)
-                data = line[6:6+size_decimal]
+                data = ser.read(size_decimal).decode().strip()
                 return data
         return None
     except serial.SerialException as e:
@@ -90,3 +92,6 @@ def sendPercepts(ser):
             print("Without perceptions to send!")
     except serial.SerialException as e:
         print(f"Erro ao enviar percepts pela porta serial: {e}")
+
+def clearChannel(ser):
+    ser.reset_input_buffer()

@@ -1,3 +1,5 @@
 dist/
 build/
 *.egg-info/
+examples/ping-pong/ping/pythonENV/
+examples/ping-pong/pong/pythonENV/
