@@ -10,12 +10,12 @@ if comm:
     try:
         while True:
             if javino.availableMsg(comm):
-                mensagem = javino.getMsg(comm)
+                mensagem = javino.getMsg()
                 if mensagem != None:
                     print(f"received: {mensagem}")
                     javino.sendMsg(comm,mensagem)
                 else:
-                    print(f"received: {mensagem}")
+                    print(f".", end=" ", flush=True)
     except KeyboardInterrupt:
         javino.disconnect(comm)
 else:

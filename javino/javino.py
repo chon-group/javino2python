@@ -2,6 +2,8 @@ import serial
 import time
 
 percepts_buffer = []
+_strMessage     = ""
+
 
 def start(port, baudrate=9600):
     try:
@@ -34,6 +36,7 @@ def sendMsg(ser, message):
         # Format the response message
         response = "fffe" + format(len(message), '02x') + message
         ser.write(response.encode())
+        ser.flush()
     except serial.SerialException as e:
         print(f"Error writing to serial port: {e}")
 
@@ -48,33 +51,75 @@ def availableMsg(ser):
     try:
         # Check if there are available bytes in the serial port
         bytes_available = ser.in_waiting
-        #return bytes_available > 0
         if bytes_available > 0:
-            return True
+            ### Header == fffe
+            h = ser.read(1).decode().strip()
+            if h != "f":
+                return False
+            h = ser.read(1).decode().strip()
+            if h != "f":
+                return False
+            h = ser.read(1).decode().strip()
+            if h != "f":
+                return False
+            h = ser.read(1).decode().strip()
+            if h != "e":
+                return False
+
+            #### Size Message fffeXX where XX is a Hexadecimal value (00 until ff) -- maxpayload=255bytes
+            size_decimal = 0
+            try:
+                size_hex = ser.read(2).decode().strip()
+                size_decimal = int(size_hex, 16)
+            except:
+                return False
+
+            #### Message
+            bytesInChannel = ser.in_waiting
+            if bytesInChannel < size_decimal:
+                print(f"[JAVINO] Incomming message")
+                notReceived = size_decimal - bytesInChannel
+                timeout = ((0.02*size_decimal)+0.5)
+                while ((notReceived > 0) and (timeout > 0)):
+                    time.sleep(0.005)
+                    timeout = timeout - 0.005
+                    bytesInChannel = ser.in_waiting
+                    if bytesInChannel < size_decimal:
+                        #print(f"Timeout: {timeout}, bytes: {bytesInChannel}", end=" ", flush=True) 
+                        notReceived = size_decimal - bytesInChannel 
+                        #print(f"NOT RECEIVED: {notReceived}")
+                    else:
+                        #print(f"arrieved bytes: {bytesInChannel}")
+                        #global _strMessage
+                        #_strMessage = ser.read(size_decimal).decode().strip()
+                        setMsg(ser.read(size_decimal).decode().strip())
+                        return True
+                print(f"[JAVINO] Timeout: {notReceived} bytes missing")
+                clearChannel(ser)
+                return False
+            else:
+                #global _strMessage
+                #_strMessage = ser.read(size_decimal).decode().strip()
+                setMsg(ser.read(size_decimal).decode().strip())
+                return True
         else:
-            time.sleep(0.05)
+            time.sleep(0.02)
             return False
     except serial.SerialException as e:
+        #print(f"Error getting message from serial port: {e}")
         print(f"Error checking available messages: {e}")
         return False
 
-def getMsg(ser):
-    try:
-        # Read available bytes from the serial port
-        bytes_available = ser.in_waiting
-        if bytes_available > 0:
-            header = ser.read(4).decode().strip()
-            if header != "fffe":
-                clearChannel(ser)
-            else:
-                size_hex = ser.read(2).decode().strip()
-                size_decimal = int(size_hex, 16)
-                data = ser.read(size_decimal).decode().strip()
-                return data
-        return None
-    except serial.SerialException as e:
-        print(f"Error getting message from serial port: {e}")
-        return None
+
+def getMsg():
+    global _strMessage 
+    output = _strMessage
+    _strMessage = None
+    return output
+
+def setMsg(msg):
+    global _strMessage  
+    _strMessage = msg
 
 def addPercept(percept):
     # Adiciona o percept ao buffer
@@ -95,3 +140,4 @@ def sendPercepts(ser):
 
 def clearChannel(ser):
     ser.reset_input_buffer()
+    #print(f"[JAVINO] Cleanning the Serial Channel...")

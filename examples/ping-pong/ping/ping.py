@@ -3,11 +3,9 @@ import time
 import random 
 import string
 
-sizeOfMsg = 64
+sizeOfMsg = 255
 porta = "/dev/ttyUSB0"  
 comm = javino.start(porta)
-message = "hello"
-count = 0
 
 
 def random_message(sm):
@@ -16,21 +14,24 @@ def random_message(sm):
 if comm:
     try:
         while True:
-            time.sleep(3)
-            count = count + 1
-            message = f"({count})"+random_message(sizeOfMsg)
+            message = random_message(sizeOfMsg)
+            javino.clearChannel(comm)
             javino.sendMsg(comm,message) 
-            print(message, end =" ", flush=True)
-            attemp = 50
+            print(f"sent: {message}", end =" ", flush=True)
+            attemp = 200
             while attemp > 0:
                 print(".", end =" ", flush=True)
                 attemp = attemp -1
                 if javino.availableMsg(comm):
                     received = javino.getMsg(comm)
-                    if received != None:
+                    if received == message:
                         attemp = 0
                         print(f"received: {received}", end =" ", flush=True)
-            print("")            
+                    elif received != None:
+                        print(f"late: {received}", end =" ", flush=True)
+                        javino.clearChannel(comm)
+            print("")  
+            time.sleep(3)          
     except KeyboardInterrupt:
         javino.disconnect(comm)
 else:
