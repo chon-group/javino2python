@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 import serial
 import time
 
-VERSION = '0.1.6'
+VERSION = '0.1.7'
 DESCRIPTION = 'Python library of Javino'
 LONG_DESCRIPTION = 'A serial message error check protocol for exchanging messages between high-end and low-end IoT devices over serial communication.'
 
